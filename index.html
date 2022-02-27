@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>ECharts</title>
+    <style>
+        .bigBox {
+            position: relative;
+            width: 740px;
+            height: 480px;
+            margin: 200px auto;
+        }
+
+        .bigBox .info {
+            margin-left: 25px;
+        }
+
+        .bigBox .info label {
+            font-weight: 700;
+        }
+
+        .bigBox .info input {
+            width: 60px;
+            height: 24px;
+        }
+
+        .bigBox .info select {
+            width: 85px;
+            height: 28px;
+        }
+
+        .bigBox button {
+            position: absolute;
+            right: 85px;
+            top: 0;
+            width: 70px;
+            height: 28px;
+            background-color: #5470c6;
+            color: #fff;
+            border: 0;
+        }
+
+        .bigBox .main {
+            width: 700px;
+            height: 400px;
+        }
+    </style>
+    <!-- 引入刚刚下载的 ECharts 文件 -->
+    <script src="js/echarts.js"></script>
+</head>
+
+<body>
+    <div class="bigBox">
+        <!-- 获取用户输入信息的表单 -->
+        <form class="info">
+            <label for="min">最小值：</label><input type="text" id="min">
+            <label for="max">最大值：</label><input type="text" id="max">
+            <label for="sum">数量：</label><input type="text" id="sum">
+            <label for="sort">排序：</label>
+            <select name="sort" id="sort">
+                <option value="0">从小到大</option>
+                <option value="1">从大到小</option>
+            </select>
+        </form>
+        <button>生成</button>
+        <!-- 为 ECharts 准备一个定义了宽高的 DOM -->
+        <div class="main"></div>
+    </div>
+
+    <script type="text/javascript">
+
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.querySelector('.main'));
+        let xAxisNew = [1, 2, 3, 4, 5, 6];
+        let yAxisNew = [9, 9, 6, 0, 0, 7];
+        var option = {
+            tooltip: {},
+            xAxis: {
+                data: xAxisNew
+            },
+            yAxis: {},
+            series: [
+                {
+
+                    type: 'bar',
+                    data: yAxisNew
+                }
+            ]
+        };
+        myChart.setOption(option);
+        // 给生成按钮添加事件监听
+        const btn = document.querySelector('button');
+        btn.onclick = function () {
+            // 判断用户输入非法
+            //get form data
+            let minNum = Number(document.getElementById("min").value);
+            let maxNum = Number(document.getElementById("max").value);
+            let sumNum = Number(document.getElementById("sum").value);
+            if (minNum < 1 || minNum > 100 || maxNum < 1 || maxNum > 100 || minNum > maxNum || sumNum < 1 || sumNum > 10) {
+                window.alert("非法输入");
+                return 0;
+            }
+            //set xAxis
+
+            xAxisNew.splice(0, xAxisNew.length);
+            for (let i = 0; i < sumNum; i++) {
+                xAxisNew[i] = i + 1;
+            }
+
+            //set yAxis
+
+            let gap = (maxNum - minNum) / (sumNum - 1);//得到递增值
+            let sortFlag = document.getElementById("sort").value;//获取排序标签，0为从小到大，1为从大到小
+
+            if (sumNum === 1) {
+                yAxisNew[0] = Math.floor((minNum + maxNum) / 2);
+            } else {
+                if (sortFlag === "0") {
+                    for (let i = 0; i < sumNum; i++) {
+                        yAxisNew[i] = Math.ceil(minNum + gap * i);
+                    }
+                } else {
+                    for (let i = 0; i < sumNum; i++) {
+                        yAxisNew[i] = Math.floor(maxNum - gap * i);
+                    }
+                }
+            }
+            myChart.setOption(option);
+        }
+
+    </script>
+</body>
+
+</html>
